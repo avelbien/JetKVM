@@ -1,0 +1,17 @@
+2026-02-20 10:57:07,237:    TookKit v2.5 for ['RK3588', 'RK3566', 'RK3568', 'RV1106', 'RV1106B', 'RV1126', 'RV1126B', 'RV1103', 'RV1103B', 'RK3528', 'RK3562', 'RK1820', 'RK2116', 'RK2118', 'RK3576', 'RK3506']
+2026-02-20 10:57:07,261:    F:\KVM\SocToolKit_v2.5_20250701_01_win\bin\windows\upgrade_tool.exe ld
+2026-02-20 10:57:08,327:    F:\KVM\SocToolKit_v2.5_20250701_01_win\bin\windows\upgrade_tool.exe ld
+2026-02-20 11:01:32,772:    TookKit v2.5 for ['RK3588', 'RK3566', 'RK3568', 'RV1106', 'RV1106B', 'RV1126', 'RV1126B', 'RV1103', 'RV1103B', 'RK3528', 'RK3562', 'RK1820', 'RK2116', 'RK2118', 'RK3576', 'RK3506']
+2026-02-20 11:01:32,773:    F:\KVM\ForKVM\SocToolKit_v2.5_20250701_01_win\bin\windows\upgrade_tool.exe ld
+2026-02-20 11:01:33,775:    F:\KVM\ForKVM\SocToolKit_v2.5_20250701_01_win\bin\windows\upgrade_tool.exe ld
+2026-02-20 11:01:34,534:    F:\KVM\ForKVM\SocToolKit_v2.5_20250701_01_win\bin\windows\upgrade_tool.exe ld
+2026-02-20 11:01:35,315:    F:\KVM\ForKVM\SocToolKit_v2.5_20250701_01_win\bin\windows\upgrade_tool.exe ld
+2026-02-20 11:01:36,078:    F:\KVM\ForKVM\SocToolKit_v2.5_20250701_01_win\bin\windows\upgrade_tool.exe ld
+2026-02-20 11:01:36,868:    F:\KVM\ForKVM\SocToolKit_v2.5_20250701_01_win\bin\windows\upgrade_tool.exe ld
+2026-02-20 11:01:37,628:    F:\KVM\ForKVM\SocToolKit_v2.5_20250701_01_win\bin\windows\upgrade_tool.exe ld
+2026-02-20 11:01:38,425:    F:\KVM\ForKVM\SocToolKit_v2.5_20250701_01_win\bin\windows\upgrade_tool.exe ld
+2026-02-20 11:01:39,224:    F:\KVM\ForKVM\SocToolKit_v2.5_20250701_01_win\bin\windows\upgrade_tool.exe ld
+2026-02-20 11:01:39,987:    F:\KVM\ForKVM\SocToolKit_v2.5_20250701_01_win\bin\windows\upgrade_tool.exe ld
+2026-02-20 11:01:40,765:    F:\KVM\ForKVM\SocToolKit_v2.5_20250701_01_win\bin\windows\upgrade_tool.exe sld
+2026-02-20 11:01:41,437:    F:\KVM\ForKVM\SocToolKit_v2.5_20250701_01_win\bin\windows\upgrade_tool.exe ld
+2026-02-20 11:01:42,202:    F:\KVM\ForKVM\SocToolKit_v2.5_20250701_01_win\bin\windows\upgrade_tool.exe ld

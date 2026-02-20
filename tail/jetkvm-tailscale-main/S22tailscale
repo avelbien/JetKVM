@@ -1,0 +1,104 @@
+#!/bin/sh
+log="/tmp/ts.log"
+tsdir="/userdata/tailscale"
+# Use /tmp since we know it's writable on this embedded system
+pidfile="/tmp/tailscaled.pid"
+
+echo "$(date): S22tailscale script called with arg: $1" >> $log
+
+wait_for_tun() {
+  modprobe tun 2>>$log
+  for i in $(seq 1 10); do
+    [ -e /dev/net/tun ] && return 0
+    echo "$(date): /dev/net/tun not ready, retrying..." >> $log
+    sleep 1
+  done
+  echo "$(date): /dev/net/tun still not present after waiting" >> $log
+  return 1
+}
+
+wait_for_network() {
+  for i in $(seq 1 10); do
+    ip route | grep default >/dev/null && return 0
+    echo "$(date): no default route yet, retrying..." >> $log
+    sleep 1
+  done
+  echo "$(date): still no default route after waiting" >> $log
+  return 1
+}
+
+check_status() {
+  if [ -f "$pidfile" ]; then
+    if kill -0 $(cat "$pidfile") 2>/dev/null; then
+      return 0
+    fi
+    # Stale PID file
+    rm "$pidfile"
+  fi
+  return 1
+}
+
+start() {
+  if check_status; then
+    echo "tailscaled is already running (PID $(cat "$pidfile"))" >> $log
+    echo "tailscaled is already running"
+    return 0
+  fi
+
+  wait_for_tun || return 1
+  wait_for_network || return 1
+  
+  echo "$(date): Starting tailscaled..." >> $log
+  
+  # Start process and save PID
+  nohup env TS_DEBUG_FIREWALL_MODE=nftables "$tsdir/tailscaled" \
+    -statedir /userdata/tailscale-state \
+    >> $log 2>&1 </dev/null &
+  
+  echo $! > "$pidfile"
+  echo "$(date): tailscaled started with PID $!" >> $log
+}
+
+stop() {
+  echo "$(date): Stopping tailscaled..." >> $log
+  if [ -f "$pidfile" ]; then
+    pid=$(cat "$pidfile")
+    kill $pid 2>/dev/null
+    # Wait for process to exit
+    for i in $(seq 1 5); do
+      kill -0 $pid 2>/dev/null || break
+      sleep 1
+    done
+    rm "$pidfile"
+  else
+    # Fallback for legacy starts
+    killall tailscaled 2>>$log
+  fi
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart)
+    stop
+    sleep 1
+    start
+    ;;
+  status)
+    if check_status; then
+      echo "tailscaled is running (PID $(cat "$pidfile"))"
+      exit 0
+    else
+      echo "tailscaled is not running"
+      exit 1
+    fi
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status}" >&2
+    exit 1
+    ;;
+esac

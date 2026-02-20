@@ -1,0 +1,10 @@
+# Configuration with secrets
+.env
+
+# Downloaded binaries and state
+tailscale.tar
+tailscale.tar.gz
+tailscale_version.txt
+
+# System files
+.DS_Store
