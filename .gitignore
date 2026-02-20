@@ -1,3 +1,86 @@
+# Игнорируем всё по умолчанию
+*
 
+# Но разрешаем текстовые файлы и файлы конфигурации
+!**/*.cs
+!**/*.csproj
+!**/*.sln
+!*.json
+!*.xml
+!*.config
+!*.txt
+!*.md
+!*.yml
+!*.yaml
+!*.env
+!*.example
+!*.gitignore
+!*.gitattributes
+!*.cshtml
+!*.razor
+!*.js
+!*.html
+!*.css
+!*.ts
+!Dockerfile
+!docker-compose*.yml
+
+# Разрешаем папки, где лежат эти файлы
+!**/
+!ForKVM/
+!JetKVM/
+
+# Но в папке ForKVM игнорируем конкретно update.img
 ForKVM/update.img
-*.imgForKVM/update.img
+ForKVM/*.img
+ForKVM/images/
+
+# Всё равно игнорируем бинарные и временные файлы везде
+*.exe
+*.dll
+*.pdb
+*.bin
+*.hex
+*.img
+*.iso
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+*.o
+*.obj
+*.so
+*.dylib
+*.lib
+*.a
+*.out
+*.class
+
+# Игнорируем системные файлы и папки IDE
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Игнорируем папки с результатами сборки
+bin/
+obj/
+Build/
+Publish/
+publish/
+out/
+dist/
+
+# Игнорируем логи и базы данных
+*.log
+*.db
+*.sqlite
+*.mdf
+*.ldf
