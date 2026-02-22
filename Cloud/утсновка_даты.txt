@@ -1,0 +1,78 @@
+ls /userdata/DataPlagin/http-time-sync.sh
+
+mkdir -p /userdata/DataPlagin
+
+cat > /userdata/DataPlagin/http-time-sync.sh << 'EOF'
+#!/bin/sh
+
+LOG="/tmp/http-time-sync.log"
+
+echo "$(date): start sync" >> $LOG
+
+sleep 5
+
+echo "$(date): waiting internet..." >> $LOG
+
+while ! ping -c1 -W1 google.com >/dev/null 2>&1; do
+ sleep 2
+done
+
+echo "$(date): internet OK" >> $LOG
+
+DATE_HEADER=$(wget -q -O- -S --spider http://google.com 2>&1 | grep -i "^  Date:")
+
+TIME_STRING=$(echo "$DATE_HEADER" | cut -d':' -f2-)
+
+if [ -n "$TIME_STRING" ]; then
+
+ FORMATTED=$(echo "$TIME_STRING" | awk '
+ {
+  day=$2
+  month=$3
+  year=$4
+  time=$5
+
+  gsub("Jan","01",month)
+  gsub("Feb","02",month)
+  gsub("Mar","03",month)
+  gsub("Apr","04",month)
+  gsub("May","05",month)
+  gsub("Jun","06",month)
+  gsub("Jul","07",month)
+  gsub("Aug","08",month)
+  gsub("Sep","09",month)
+  gsub("Oct","10",month)
+  gsub("Nov","11",month)
+  gsub("Dec","12",month)
+
+  printf("%s-%s-%s %s\n",year,month,day,time)
+ }')
+
+ echo "$(date): set time $FORMATTED" >> $LOG
+
+ date -s "$FORMATTED"
+
+ hwclock -w 2>/dev/null
+
+ echo "$(date): done" >> $LOG
+
+else
+
+ echo "$(date): ERROR getting time" >> $LOG
+
+fi
+EOF
+
+chmod +x /userdata/DataPlagin/http-time-sync.sh
+
+sh /userdata/DataPlagin/http-time-sync.sh
+
+tail -f /tmp/http-time-sync.log
+
+export TZ="MSK-3"
+
+echo 'export TZ="MSK-3"' >> /etc/profile
+
+если папка меняется то надо переустановить в профайле
+grep http-time-sync /etc/profile
+echo "/путь/http-time-sync.sh &" >> /etc/profile

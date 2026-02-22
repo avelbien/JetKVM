@@ -3,115 +3,15 @@
 Открой Git Bash и выполни:
 cd /f/KVM/Cloud
 
-Шаг 2. Создай файл .env
-JETKVM_IP=192.168.1.101
-SSH_USER=root
-SSH_KEY_PATH=/c/Users/s/Key/KeyGit/.ssh/id_ed25519
-CLOUDPUB_VERSION=3.0.2
-
-
-Шаг 3. Создай install_on_device_cloudpub.sh
-
-set -e
-cd /userdata
-echo "Step 1: Handling CloudPub binaries..."
-if [ -f cloudpub.tar.gz ]; then
-    if [ -d cloudpub ]; then
-        echo "Removing existing cloudpub directory..."
-        rm -rf cloudpub
-    fi
-
-    echo "Extracting cloudpub.tar.gz..."
-    tar xzf cloudpub.tar.gz
-
-    # Find extracted directory (clo-3.0.2-linux-arm)
-    EXTRACTED_DIR=$(ls -d clo-* 2>/dev/null | head -n 1)
-
-    if [ -n "$EXTRACTED_DIR" ] && [ -d "$EXTRACTED_DIR" ]; then
-        echo "Renaming $EXTRACTED_DIR to cloudpub..."
-        mv "$EXTRACTED_DIR" cloudpub
-        rm cloudpub.tar.gz
-    else
-        echo "Error: Could not find extracted directory"
-        exit 1
-    fi
-else
-    echo "cloudpub.tar.gz not found"
-    exit 1
-fi
-
-echo "Step 2: Making binary executable..."
-chmod +x /userdata/cloudpub/clo
-
-echo "Step 3: CloudPub installed successfully!"
-echo ""
-echo "Next steps:"
-echo "1. Run: /userdata/cloudpub/clo login"
-echo "2. Run: /userdata/cloudpub/clo publish http 80 --name jetkvm"
-
-
-
-Шаг 4. Создай setup-cloudpub.sh
-
-#!/bin/bash
-
-# Load configuration from .env
-if [ -f .env ]; then
-    export $(grep -v '^#' .env | xargs)
-fi
-
-JETKVM_IP="${JETKVM_IP:-}"
-SSH_USER="${SSH_USER:-root}"
-REMOTE_DIR="/userdata"
-SSH_KEY_PATH="${SSH_KEY_PATH:-}"
-CLOUDPUB_VERSION="${CLOUDPUB_VERSION:-3.0.2}"
-
-# SSH Command Construction
-SSH_CMD="ssh"
-if [ -n "$SSH_KEY_PATH" ]; then
-    if [ ! -f "$SSH_KEY_PATH" ]; then
-        echo "Error: SSH key not found at $SSH_KEY_PATH"
-        exit 1
-    fi
-    SSH_CMD="ssh -i $SSH_KEY_PATH"
-fi
-
-echo "Installing CloudPub version $CLOUDPUB_VERSION on JetKVM at $JETKVM_IP"
-
-# Download CloudPub
-DOWNLOAD_URL="https://github.com/ermak-dev/cloudpub/releases/download/v$CLOUDPUB_VERSION/clo-${CLOUDPUB_VERSION}-linux-arm.tar.gz"
-echo "Downloading from: $DOWNLOAD_URL"
-curl -L -o cloudpub.tar.gz "$DOWNLOAD_URL"
-
-if [ $? -ne 0 ]; then
-    echo "Download failed"
-    exit 1
-fi
-
-# Transfer to JetKVM
-echo "Transferring to JetKVM..."
-cat cloudpub.tar.gz | $SSH_CMD "$SSH_USER@$JETKVM_IP" "cat > $REMOTE_DIR/cloudpub.tar.gz"
-
-# Transfer install script
-echo "Transferring install script..."
-cat install_on_device_cloudpub.sh | $SSH_CMD "$SSH_USER@$JETKVM_IP" "cat > $REMOTE_DIR/install_cloudpub.sh"
-
-# Run install script
-echo "Running installation on device..."
-$SSH_CMD "$SSH_USER@$JETKVM_IP" "chmod +x $REMOTE_DIR/install_cloudpub.sh && $REMOTE_DIR/install_cloudpub.sh"
-
-echo "Setup complete!"
-
-Шаг 5. Сделай скрипты исполняемыми в баше
-
+Шаг 5. Сделай скрипты исполняемыми в баше, если он новый
 chmod +x setup-cloudpub.sh install_on_device_cloudpub.sh
 
 Шаг 6. Запусти установку
 ./setup-cloudpub.sh
 
-Шаг 7. Авторизация и публикация
+Шаг 7. Авторизация и публикация （делать в квм）
 
-ssh root@192.168.1.101
+ssh root@
 /userdata/cloudpub/clo login
 /userdata/cloudpub/clo publish http 80 --name jetkvm
 /userdata/cloudpub/clo ls
@@ -140,23 +40,23 @@ rm -f /userdata/install_on_device.sh
 Удаление
 ssh root@192.168.1.101
 
-Шаг 2.Останови все процессы CloudPub
+#Шаг 2.Останови все процессы CloudPub
 killall clo 2>/dev/null
 pkill -f "clo run" 2>/dev/null
 
-Шаг 3. Удали папку с программой
+#Шаг 3. Удали папку с программой
 rm -rf /userdata/cloudpub
 rm -f /userdata/cloudpub.tar.gz
 rm -f /userdata/install_cloudpub.sh
 rm -f /userdata/install_on_device.sh
-
+rm -rf /userdata/clo
 rm -f /userdata/clo-3.0.2-linux-arm.tar.gz
 
 
-Шаг 4. Удали автозапуск из /etc/profile
+#Шаг 4. Удали автозапуск из /etc/profile
 sed -i '/# Auto-start CloudPub/,+3d' /etc/profile
 
-Шаг 5. Проверь результат
+#Шаг 5. Проверь результат
 ls -la /userdata/ | grep -E "cloud|clo"
 ps aux | grep clo
 
@@ -164,37 +64,21 @@ ps aux | grep clo
 
 //////////////
 
-ls -la /userdata/
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the ED25519 key sent by the remote host is
+SHA256:+Zo9mRR7PAWj6dodjfpFZmjT4fr5oL6K9Q0SAWT9/cQ.
+Please contact your system administrator.
+Add correct host key in C:\\Users\\Avel/.ssh/known_hosts to get rid of this message.
+Offending ED25519 key in C:\\Users\\Avel/.ssh/known_hosts:5
+Host key for 192.168.1.101 has changed and you have requested strict checking.
+Host key verification failed.
 
-drwxr-xr-x    6 root     root          4096 Feb 20 09:16 .
-drwxr-xr-x   25 root     root          4096 Feb 20 09:49 ..
--rw-r--r--    1 root     root            18 Feb 20 09:49 .mac_address
-drwxr-xr-x    2 root     root          4096 Feb 20 09:16 cloudpub
--rw-r--r--    1 root     root       2282842 Feb 20 09:15 cloudpub.tar.gz
-drwxr-xr-x    4 root     root          4096 Feb 16 20:31 dropbear
--rwxr-xr-x    1 root     root           995 Feb 20 09:15 install_cloudpub.sh
--rwxr-xr-x    1 root     root          3745 Feb 17 19:01 install_on_device.sh
-drwxrwxr-x    6 root     root          4096 Feb 20 10:04 jetkvm
--rw-r--r--    1 root     root          1823 Feb 16 21:28 kvm_config.json
-drwx------    2 root     root         16384 Jan 29 11:26 lost+found
 
-/userdata/cloudpub/:
-total 4400
-drwxr-xr-x    2 root     root          4096 Feb 20 09:16 .
-drwxr-xr-x    6 root     root          4096 Feb 20 09:16 ..
--rwxr-xr-x    1 1001     1001       4496228 Dec 24 08:42 clo
+ssh-keygen -R 192.168.1.101
+ssh root@192.168.1.101
 
-# ls -la /userdata/cloudpub/
-total 4400
-drwxr-xr-x    2 root     root          4096 Feb 20 09:16 .
-drwxr-xr-x    6 root     root          4096 Feb 20 09:16 ..
--rwxr-xr-x    1 1001     1001       4496228 Dec 24 08:42 clo
-
-# ps aux | grep -E "tailscale|clo|cloudpub"
-  325 root      0:00 /userdata/cloudpub/clo run
-  349 root      0:00 grep -E tailscale|clo|cloudpub
-#
-# grep -n "cloudpub" /etc/profile
-24:    nohup /userdata/cloudpub/clo run > /dev/null 2>&1 &
-# /userdata/cloudpub/clo ls
-online  acb9e430-c782-4164-87a2-a31b8b3f34db [jetkvm] http://localhost:80 -> https://sketchily-droll-sweeper.cloudpub.ru:443

@@ -5,37 +5,35 @@ if [ -f .env ]; then
     export $(grep -v '^#' .env | xargs)
 fi
 
-JETKVM_IP="${JETKVM_IP:-}"
-SSH_USER="${SSH_USER:-root}"
-REMOTE_DIR="/userdata"
-SSH_KEY_PATH="${SSH_KEY_PATH:-}"
-CLOUDPUB_VERSION="${CLOUDPUB_VERSION:-3.0.2}"
-
-# SSH Command Construction
-SSH_CMD="ssh"
-if [ -n "$SSH_KEY_PATH" ]; then
-    if [ ! -f "$SSH_KEY_PATH" ]; then
-        echo "Error: SSH key not found at $SSH_KEY_PATH"
-        exit 1
-    fi
-    SSH_CMD="ssh -i $SSH_KEY_PATH"
-fi
-
-echo "Installing CloudPub version $CLOUDPUB_VERSION on JetKVM at $JETKVM_IP"
-
-# Download CloudPub
-DOWNLOAD_URL="https://github.com/ermak-dev/cloudpub/releases/download/v$CLOUDPUB_VERSION/clo-${CLOUDPUB_VERSION}-linux-arm.tar.gz"
-echo "Downloading from: $DOWNLOAD_URL"
-curl -L -o cloudpub.tar.gz "$DOWNLOAD_URL"
-
-if [ $? -ne 0 ]; then
-    echo "Download failed"
+# Проверка обязательных параметров
+if [ -z "$JETKVM_IP" ] || [ -z "$SSH_USER" ] || [ -z "$SSH_KEY_PATH" ] || [ -z "$LOCAL_FILE_PATH" ]; then
+    echo "Error: Missing required variables in .env file"
+    echo "Required: JETKVM_IP, SSH_USER, SSH_KEY_PATH, LOCAL_FILE_PATH"
     exit 1
 fi
 
-# Transfer to JetKVM
-echo "Transferring to JetKVM..."
-cat cloudpub.tar.gz | $SSH_CMD "$SSH_USER@$JETKVM_IP" "cat > $REMOTE_DIR/cloudpub.tar.gz"
+REMOTE_DIR="/userdata"
+
+# SSH Command Construction
+SSH_CMD="ssh"
+if [ ! -f "$SSH_KEY_PATH" ]; then
+    echo "Error: SSH key not found at $SSH_KEY_PATH"
+    exit 1
+fi
+SSH_CMD="ssh -i $SSH_KEY_PATH"
+
+echo "Installing CloudPub on JetKVM at $JETKVM_IP"
+echo "Using local file: $LOCAL_FILE_PATH"
+
+# Проверяем локальный файл
+if [ ! -f "$LOCAL_FILE_PATH" ]; then
+    echo "Error: Local file not found at $LOCAL_FILE_PATH"
+    exit 1
+fi
+
+# Transfer file to JetKVM
+echo "Transferring local file to JetKVM..."
+cat "$LOCAL_FILE_PATH" | $SSH_CMD "$SSH_USER@$JETKVM_IP" "cat > $REMOTE_DIR/cloudpub.tar.gz"
 
 # Transfer install script
 echo "Transferring install script..."

@@ -5,7 +5,7 @@
     "DisableMaskromDetect": false,
     "Download": {
         "TransferMode": "USB",
-        "Device": "",
+        "Device": "Maskrom rockchip 3103",
         "Baudrate": "1500000",
         "Reset": false,
         "DefaultJson": ""
