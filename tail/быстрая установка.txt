@@ -1,0 +1,23 @@
+#на квм
+ mkdir -p /userdata/Tail/
+
+#Bash
+cat tailscale_1.94.2_arm.tgz | ssh -i /s/Key/KeyGit/.ssh/id_ed25519 root@192.168.1.101 "cat > /userdata/Tail/tailscale.tgz"
+
+
+
+#на квм
+cd /userdata/Tail
+tar xf tailscale.tgz
+mv tailscale_*_arm tailscale
+
+/userdata/Tail/tailscale/tailscale version
+
+/userdata/Tail/tailscale/tailscaled \
+  --state=/userdata/Tail/tailscale.state \
+  --socket=/tmp/tailscaled.sock \
+  --tun=tailscale0 &
+
+
+/userdata/Tail/tailscale/tailscale \
+  --socket=/tmp/tailscaled.sock up

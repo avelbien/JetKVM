@@ -1,0 +1,9 @@
+ cd /f/KVM/
+
+$ cat jetkvm_app | ssh -i /s/Key/KeyGit/.ssh/id_ed25519 root@192.168.1.101 "cat > /userdata/jetkvm/jetkvm_app.update"
+
+
+//для установки прошивки
+chmod +x /userdata/jetkvm/jetkvm_app.update
+
+reboot

@@ -1,0 +1,3 @@
+cp /userdata/jetkvm/bin/jetkvm_app.backup /userdata/jetkvm/bin/jetkvm_app
+chmod +x /userdata/jetkvm/bin/jetkvm_app
+reboot

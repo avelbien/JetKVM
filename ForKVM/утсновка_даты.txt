@@ -73,6 +73,6 @@ export TZ="MSK-3"
 
 echo 'export TZ="MSK-3"' >> /etc/profile
 
-если папка меняется то надо переустановить в профайле
+#если папка меняется то надо переустановить в профайле
 grep http-time-sync /etc/profile
 echo "/путь/http-time-sync.sh &" >> /etc/profile
